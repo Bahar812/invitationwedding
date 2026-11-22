@@ -1,20 +1,29 @@
 # Undangan Pernikahan (React + Framer Motion)
 
 ```
-frontend/  React (Vite) + framer-motion, mobile first
-backend/   Express API untuk ucapan & konfirmasi kehadiran (disimpan di data/wishes.json)
+frontend/  React (Vite) + framer-motion, mobile first (+ halaman /admin)
+backend/   Express API: tamu, ucapan, pengaturan, upload (disimpan sebagai JSON di backend/data)
 ```
 
 ## Menjalankan
 ```bash
-cd backend  && npm install && npm run dev     # http://localhost:4000
-cd frontend && npm install && npm run dev     # http://localhost:5173 (proxy /api ke backend)
+cd backend  && npm install && ADMIN_PASSWORD=passwordrahasia npm run dev   # http://localhost:4000
+cd frontend && npm install && npm run dev                                   # http://localhost:5173
 ```
-Buka dengan nama tamu: `http://localhost:5173/?to=Budi+Santoso`
-(tanpa `?to=` form ucapan menampilkan "Khusus untuk tamu undangan").
+PowerShell: `$env:ADMIN_PASSWORD='passwordrahasia'; npm run dev`
+Tanpa `ADMIN_PASSWORD`, password default adalah `admin123` — **wajib diganti** sebelum online.
 
-## Kustomisasi
-- Semua teks, foto, tanggal, rekening: `frontend/src/data/invitation.js`
-- Musik: taruh `frontend/public/music.mp3`
-- Foto saat ini placeholder (picsum); ganti dengan foto asli di `frontend/public/` lalu isi path-nya.
-- Produksi: set `VITE_API_URL` ke URL backend, lalu `npm run build`.
+## Admin panel
+- Akses hanya lewat URL: `/admin` (tidak ada tombol di undangan).
+- **Tamu**: tambah manual atau upload Excel `.xlsx` / `.csv` (nama di kolom A, satu per baris).
+  Tiap tamu otomatis punya link unik `/?to=<slug>`; bisa salin link, kirim lewat WhatsApp, ubah nama, hapus, dan unduh CSV.
+  Mengubah nama tidak mengubah link.
+- **Ucapan**: lihat/hapus ucapan dan konfirmasi hadir.
+- **Pengaturan**: ubah nama, foto (upload), tanggal, acara, rekening, love story, musik, dll. Tersimpan di `backend/data/invitation.json` dan menimpa nilai default di `frontend/src/data/invitation.js`.
+
+Hanya tamu dengan link valid yang bisa mengirim ucapan; tanpa link, form menampilkan "Khusus untuk tamu undangan".
+
+## Produksi
+- Set `VITE_API_URL` (URL backend + `/api`) lalu `npm run build` di frontend.
+- Web server harus mengarahkan semua path (termasuk `/admin`) ke `index.html` (SPA fallback) dan meneruskan `/api` & `/uploads` ke backend.
+- `backend/data` dan `backend/uploads` berisi data nyata (nama tamu, foto); backup dan jangan di-commit.

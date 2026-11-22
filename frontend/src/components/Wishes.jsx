@@ -5,7 +5,7 @@ import { Float, Branch } from './Decor.jsx';
 
 const API = import.meta.env.VITE_API_URL || '/api';
 
-export default function Wishes({ guest }) {
+export default function Wishes({ guest, slug }) {
   const [list, setList] = useState([]);
   const [message, setMessage] = useState('');
   const [attend, setAttend] = useState('hadir');
@@ -25,7 +25,7 @@ export default function Wishes({ guest }) {
       const r = await fetch(`${API}/wishes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: guest, message, attendance: attend }),
+        body: JSON.stringify({ slug, message, attendance: attend }),
       });
       const j = await r.json();
       if (!r.ok) throw new Error(j.error || 'Gagal mengirim');
